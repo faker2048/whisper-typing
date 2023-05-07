@@ -1,3 +1,5 @@
+# main.py
+
 import sys
 import time
 import keyboard

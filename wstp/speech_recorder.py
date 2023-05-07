@@ -1,4 +1,5 @@
 # speech_recorder.py
+
 import pyaudio
 import wave
 import tempfile
