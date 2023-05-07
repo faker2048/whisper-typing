@@ -3,18 +3,15 @@
 import pyaudio
 import wave
 import tempfile
-from typing import Callable
 
 
 class SpeechRecorder:
     def __init__(
         self,
-        speech2text: Callable[[str], str],
         rate=16000,
         format=pyaudio.paInt16,
         buffer_size=1024,
     ):
-        self.speech2text = speech2text
         self.audio = pyaudio.PyAudio()
         self.stream = None
         self.frames = []
@@ -57,7 +54,3 @@ class SpeechRecorder:
             wf.writeframes(b"".join(self.frames))
             wf.close()
             return f.name
-
-    def process_audio(self, audio_file: str):
-        text = self.speech2text(audio_file)
-        return text
