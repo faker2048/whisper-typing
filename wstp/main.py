@@ -5,7 +5,6 @@ import time
 import keyboard
 from loguru import logger
 from speech_recorder import SpeechRecorder
-from speech_to_text import speech2text
 
 
 def handle_record(keyboard_key: str, recorder: SpeechRecorder):
@@ -28,7 +27,7 @@ def handle_exit():
 
 
 def main():
-    recorder = SpeechRecorder(speech2text)
+    recorder = SpeechRecorder()
 
     while True:
         keyboard.wait("i")
