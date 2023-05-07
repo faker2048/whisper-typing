@@ -13,31 +13,40 @@ class SpeechRecorder:
         self.stream = None
         self.frames = []
 
+        self.rate = 16000
+        self.format = pyaudio.paInt16
+        self.buffer_size = 1024
+
     def start_recording(self):
         self.stream = self.audio.open(
-            format=pyaudio.paInt16,
+            format=self.format,
             channels=1,
-            rate=16000,
+            rate=self.rate,
             input=True,
-            frames_per_buffer=1024,
+            frames_per_buffer=self.buffer_size,
         )
         self.frames = []
 
     def record(self):
-        data = self.stream.read(1024)
+        data = self.stream.read(self.buffer_size)
         self.frames.append(data)
 
     def stop_recording(self):
         self.stream.stop_stream()
         self.stream.close()
-        return self.save_audio()
 
-    def save_audio(self):
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as f:
+    def save_audio(self, file_name: str = None):
+        def open_file():
+            if file_name:
+                return open(file_name, "wb")
+            else:
+                return tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+
+        with open_file() as f:
             wf = wave.open(f, "wb")
             wf.setnchannels(1)
-            wf.setsampwidth(self.audio.get_sample_size(pyaudio.paInt16))
-            wf.setframerate(16000)
+            wf.setsampwidth(self.audio.get_sample_size(self.format))
+            wf.setframerate(self.rate)
             wf.writeframes(b"".join(self.frames))
             wf.close()
             return f.name
