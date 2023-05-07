@@ -7,15 +7,21 @@ from typing import Callable
 
 
 class SpeechRecorder:
-    def __init__(self, speech2text: Callable[[str], str]):
+    def __init__(
+        self,
+        speech2text: Callable[[str], str],
+        rate=16000,
+        format=pyaudio.paInt16,
+        buffer_size=1024,
+    ):
         self.speech2text = speech2text
         self.audio = pyaudio.PyAudio()
         self.stream = None
         self.frames = []
 
-        self.rate = 16000
-        self.format = pyaudio.paInt16
-        self.buffer_size = 1024
+        self.rate = rate
+        self.format = format
+        self.buffer_size = buffer_size
 
     def start_recording(self):
         self.stream = self.audio.open(
