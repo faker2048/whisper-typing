@@ -6,18 +6,22 @@ import keyboard
 import argparse
 from loguru import logger
 from speech_recorder import SpeechRecorder
+from speech_to_text import SpeechToText
 
 
-def handle_record(keyboard_key: str, recorder: SpeechRecorder):
+def handle_record(
+    keyboard_key: str, recorder: SpeechRecorder, speech2text: SpeechToText
+):
     logger.info("Recording started...")
     recorder.start_recording()
     while keyboard.is_pressed(keyboard_key):
         recorder.record()
-        time.sleep(0.01)
     logger.info("Recording stopped...")
     recorder.stop_recording()
     audio_file = recorder.save_audio("target/audio.wav")
     logger.info("Audio file saved: {}".format(audio_file))
+    text = speech2text.speech2text(audio_file)
+    logger.info("Text: {}".format(text))
 
 
 def handle_exit():
@@ -54,11 +58,17 @@ def main():
         rate=args.rate,
         buffer_size=args.buffer_size,
     )
+    speech2text = SpeechToText(
+        model_name="large-v2",
+        download_root="F:/youtube",
+        in_memory=True,
+    )
 
     while True:
         keyboard.wait(args.keyboard_key)
         if keyboard.is_pressed(args.keyboard_key):
-            handle_record(args.keyboard_key, recorder)
+            handle_record(args.keyboard_key, recorder, speech2text)
+
         if keyboard.is_pressed("q"):
             handle_exit()
         time.sleep(0.1)

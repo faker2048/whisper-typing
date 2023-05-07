@@ -38,7 +38,7 @@ class SpeechRecorder:
         self.stream.stop_stream()
         self.stream.close()
 
-    def __open_file(file_name: str = None):
+    def __open_file(self, file_name: str = None):
         return (
             open(file_name, "wb")
             if file_name

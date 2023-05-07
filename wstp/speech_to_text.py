@@ -1,8 +1,40 @@
-# speech_to_text.py
-
+import whisper
 from loguru import logger
 
 
-def speech2text(audio_file: str) -> str:
-    logger.info("Converting speech to text...")
-    # Add your code for converting speech to text here
+class SpeechToText:
+    def __init__(
+        self,
+        model_name: str = "large-v2",
+        download_root: str = None,
+        in_memory: bool = False,
+    ):
+        logger.info("Load model...")
+        self.model = whisper.load_model(
+            name=model_name, download_root=download_root, in_memory=in_memory
+        )
+        logger.info("Model loaded.")
+
+    def load_audio(self, audio_file: str):
+        audio = whisper.load_audio(audio_file)
+        audio = whisper.pad_or_trim(audio)
+        return audio
+
+    def speech2text(self, audio_file: str) -> str:
+        logger.info(" Load audio...")
+        audio = self.load_audio(audio_file)
+
+        # make log-Mel spectrogram and move to the same device as the model
+        mel = whisper.log_mel_spectrogram(audio).to(self.model.device)
+
+        # detect the spoken language
+        logger.info("Detecting language...")
+        _, probs = self.model.detect_language(mel)
+        logger.info(f"Detected language: {max(probs, key=probs.get)}")
+
+        # decode the audio
+        logger.info("Decoding...")
+        options = whisper.DecodingOptions()
+        result = whisper.decode(self.model, mel, options)
+        logger.info("Decode over.")
+        return result.text
