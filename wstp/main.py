@@ -4,7 +4,7 @@ import keyboard
 import os
 from loguru import logger
 from speech_recorder import SpeechRecorder
-from speech2text import speech2text
+from speech_to_text import speech2text
 
 
 def print_file_size(file_path: str):
