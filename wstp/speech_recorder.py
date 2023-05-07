@@ -35,14 +35,15 @@ class SpeechRecorder:
         self.stream.stop_stream()
         self.stream.close()
 
-    def save_audio(self, file_name: str = None):
-        def open_file():
-            if file_name:
-                return open(file_name, "wb")
-            else:
-                return tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+    def __open_file(file_name: str = None):
+        return (
+            open(file_name, "wb")
+            if file_name
+            else tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        )
 
-        with open_file() as f:
+    def save_audio(self, file_name: str = None):
+        with self.__open_file(file_name) as f:
             wf = wave.open(f, "wb")
             wf.setnchannels(1)
             wf.setsampwidth(self.audio.get_sample_size(self.format))

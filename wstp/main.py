@@ -3,7 +3,6 @@
 import sys
 import time
 import keyboard
-import os
 from loguru import logger
 from speech_recorder import SpeechRecorder
 from speech_to_text import speech2text
