@@ -1,6 +1,7 @@
 # speech_recorder.py
 
-import pyaudio
+import sounddevice as sd
+import numpy as np
 import wave
 import tempfile
 
@@ -9,33 +10,27 @@ class SpeechRecorder:
     def __init__(
         self,
         rate=16000,
-        format=pyaudio.paInt16,
-        buffer_size=1024,
+        format=np.int16,
     ):
-        self.audio = pyaudio.PyAudio()
-        self.stream = None
-        self.frames = []
-
         self.rate = rate
         self.format = format
-        self.buffer_size = buffer_size
-
-    def start_recording(self):
-        self.stream = self.audio.open(
-            format=self.format,
-            channels=1,
-            rate=self.rate,
-            input=True,
-            frames_per_buffer=self.buffer_size,
-        )
         self.frames = []
 
-    def record(self):
-        data = self.stream.read(self.buffer_size)
-        self.frames.append(data)
+    def start_recording(self):
+        self.frames = []
+        self.stream = sd.InputStream(
+            samplerate=self.rate,
+            channels=1,
+            dtype=self.format,
+            callback=self.__callback,
+        )
+        self.stream.start()
+
+    def __callback(self, indata, frames, time, status):
+        self.frames.append(indata.copy())
 
     def stop_recording(self):
-        self.stream.stop_stream()
+        self.stream.stop()
         self.stream.close()
 
     def __open_file(self, file_name: str = None):
@@ -49,8 +44,8 @@ class SpeechRecorder:
         with self.__open_file(file_name) as f:
             wf = wave.open(f, "wb")
             wf.setnchannels(1)
-            wf.setsampwidth(self.audio.get_sample_size(self.format))
+            wf.setsampwidth(np.dtype(self.format).itemsize)
             wf.setframerate(self.rate)
-            wf.writeframes(b"".join(self.frames))
+            wf.writeframes(b"".join([frame.tobytes() for frame in self.frames]))
             wf.close()
             return f.name

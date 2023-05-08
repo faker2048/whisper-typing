@@ -15,7 +15,7 @@ def handle_record(
     logger.info("Recording started...")
     recorder.start_recording()
     while keyboard.is_pressed(keyboard_key):
-        recorder.record()
+        time.sleep(0.1)
     logger.info("Recording stopped...")
     recorder.stop_recording()
     audio_file = recorder.save_audio("target/audio.wav")
@@ -35,13 +35,6 @@ def parse_args():
         "-r", "--rate", type=int, default=16000, help="Sampling rate (default: 16000)"
     )
     parser.add_argument(
-        "-b",
-        "--buffer-size",
-        type=int,
-        default=1024,
-        help="Buffer size (default: 1024)",
-    )
-    parser.add_argument(
         "-k",
         "--keyboard-key",
         type=str,
@@ -56,7 +49,6 @@ def main():
 
     recorder = SpeechRecorder(
         rate=args.rate,
-        buffer_size=args.buffer_size,
     )
     speech2text = SpeechToText(
         model_name="large-v2",
