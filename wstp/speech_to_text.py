@@ -1,4 +1,5 @@
 import whisper
+from numpy import ndarray
 from loguru import logger
 
 
@@ -17,12 +18,15 @@ class SpeechToText:
 
     def load_audio(self, audio_file: str):
         audio = whisper.load_audio(audio_file)
-        audio = whisper.pad_or_trim(audio)
         return audio
 
-    def speech2text(self, audio_file: str) -> str:
+    def speechfile2text(self, audio_file: str) -> str:
         logger.info(" Load audio...")
         audio = self.load_audio(audio_file)
+        return self.speech2text(audio)
+
+    def speech2text(self, audio: ndarray) -> str:
+        audio = whisper.pad_or_trim(audio)
 
         # make log-Mel spectrogram and move to the same device as the model
         mel = whisper.log_mel_spectrogram(audio).to(self.model.device)

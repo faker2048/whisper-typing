@@ -49,3 +49,13 @@ class SpeechRecorder:
             wf.writeframes(b"".join([frame.tobytes() for frame in self.frames]))
             wf.close()
             return f.name
+
+    def get_audio_data(self) -> np.ndarray:
+        audio_data = np.concatenate(self.frames)
+        if self.format == np.int16:
+            return (
+                np.frombuffer(audio_data, np.int16).flatten().astype(np.float32)
+                / 32768.0
+            )
+        else:
+            raise NotImplementedError("Unsupported format for get_audio_data.")

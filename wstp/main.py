@@ -18,9 +18,9 @@ def handle_record(
         time.sleep(0.1)
     logger.info("Recording stopped...")
     recorder.stop_recording()
-    audio_file = recorder.save_audio("target/audio.wav")
-    logger.info("Audio file saved: {}".format(audio_file))
-    text = speech2text.speech2text(audio_file)
+
+    audio = recorder.get_audio_data()
+    text = speech2text.speech2text(audio)
     logger.info("Text: {}".format(text))
 
 
