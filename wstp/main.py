@@ -7,21 +7,30 @@ import argparse
 from loguru import logger
 from speech_recorder import SpeechRecorder
 from speech_to_text import SpeechToText
+from typing import Callable
 
 
 def handle_record(
-    keyboard_key: str, recorder: SpeechRecorder, speech2text: SpeechToText
+    args: argparse.Namespace,
+    recorder: SpeechRecorder,
+    speech2text: SpeechToText,
+    text_callback: Callable = None,
 ):
-    logger.info("Recording started...")
+    logger.debug("Recording started...")
     recorder.start_recording()
-    while keyboard.is_pressed(keyboard_key):
+    while keyboard.is_pressed(args.keyboard_key):
         time.sleep(0.1)
-    logger.info("Recording stopped...")
+    logger.debug("Recording stopped...")
     recorder.stop_recording()
 
+    if args.save:
+        logger.debug("Saving audio...")
+        recorder.save_audio("target/audio.wav")
+
     audio = recorder.get_audio_data()
-    text = speech2text.speech2text(audio)
-    logger.info("Text: {}".format(text))
+    text = speech2text.speech2text(audio, args.language)
+    if text_callback:
+        text_callback(text)
 
 
 def handle_exit():
@@ -39,8 +48,37 @@ def parse_args():
         "--keyboard-key",
         type=str,
         default="i",
-        help="Keyboard key to start/stop recording (default: 'i')",
+        help="Keyboard key to start/stop recording (default: 'F10')",
     )
+    parser.add_argument(
+        "-l",
+        "--language",
+        type=str,
+        default=None,
+        help="Language code (default: None)",
+    )
+    parser.add_argument(
+        "-s",
+        "--save",
+        type=bool,
+        default=False,
+        help="Save recorded audio (default: False)",
+    )
+    parser.add_argument(
+        "-t",
+        "--translate",
+        type=bool,
+        default=False,
+        help="Translate text (default: False)",
+    )
+    parser.add_argument(
+        "-m",
+        "--model-name",
+        type=str,
+        default="large-v2",
+        help="Model name (default: 'large-v2')",
+    )
+
     return parser.parse_args()
 
 
@@ -51,7 +89,7 @@ def main():
         rate=args.rate,
     )
     speech2text = SpeechToText(
-        model_name="large-v2",
+        model_name=args.model_name,
         download_root="F:/youtube",
         in_memory=True,
     )
@@ -59,10 +97,8 @@ def main():
     while True:
         keyboard.wait(args.keyboard_key)
         if keyboard.is_pressed(args.keyboard_key):
-            handle_record(args.keyboard_key, recorder, speech2text)
+            handle_record(args, recorder, speech2text)
 
-        if keyboard.is_pressed("q"):
-            handle_exit()
         time.sleep(0.1)
 
 
