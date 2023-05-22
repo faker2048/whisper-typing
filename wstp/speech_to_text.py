@@ -25,20 +25,14 @@ class SpeechToText:
         audio = self.load_audio(audio_file)
         return self.speech2text(audio)
 
-    def speech2text(self, audio: ndarray) -> str:
+    def speech2text(self, audio: ndarray, language: str) -> str:
         audio = whisper.pad_or_trim(audio)
 
         # make log-Mel spectrogram and move to the same device as the model
         mel = whisper.log_mel_spectrogram(audio).to(self.model.device)
 
-        # detect the spoken language
-        logger.info("Detecting language...")
-        _, probs = self.model.detect_language(mel)
-        logger.info(f"Detected language: {max(probs, key=probs.get)}")
-
         # decode the audio
-        logger.info("Decoding...")
-        options = whisper.DecodingOptions()
+        logger.info("Decoding... use language: {}.".format(language))
+        options = whisper.DecodingOptions(task="translate", language=language)
         result = whisper.decode(self.model, mel, options)
-        logger.info("Decode over.")
         return result.text
