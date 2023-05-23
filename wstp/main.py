@@ -48,7 +48,7 @@ def parse_args():
         "-k",
         "--keyboard-key",
         type=str,
-        default="i",
+        default="F10",
         help="Keyboard key to start/stop recording (default: 'F10')",
     )
     parser.add_argument(
