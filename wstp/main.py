@@ -5,9 +5,10 @@ import time
 import keyboard
 import argparse
 from loguru import logger
-from speech_recorder import SpeechRecorder
-from speech_to_text import SpeechToText
+from wstp.speech_recorder import SpeechRecorder
+from wstp.speech_to_text import SpeechToText
 from typing import Callable
+from vrchat.vrchat_client import VRChatClient
 
 
 def handle_record(
@@ -93,11 +94,12 @@ def main():
         download_root="F:/youtube",
         in_memory=True,
     )
+    vrchat_client = VRChatClient()
 
     while True:
         keyboard.wait(args.keyboard_key)
         if keyboard.is_pressed(args.keyboard_key):
-            handle_record(args, recorder, speech2text)
+            handle_record(args, recorder, speech2text, vrchat_client.input_to_chatbox)
 
         time.sleep(0.1)
 
