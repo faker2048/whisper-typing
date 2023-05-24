@@ -1,6 +1,5 @@
 # main.py
 
-import sys
 import time
 import keyboard
 from loguru import logger
