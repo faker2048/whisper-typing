@@ -11,12 +11,7 @@ from wstp.speech_recorder import SpeechRecorder
 from wstp.speech_to_text import SpeechToText
 
 
-def handle_exit():
-    logger.info("Exiting program...")
-    sys.exit(0)
-
-
-def main():
+def start_program():
     args = parse_command_line_arguments()
 
     recorder = SpeechRecorder(
@@ -41,4 +36,4 @@ def main():
 
 if __name__ == "__main__":
     logger.info("Starting program...")
-    main()
+    start_program()
