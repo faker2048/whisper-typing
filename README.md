@@ -7,8 +7,11 @@ The result text will be automatically copied to your clipboard.
 TODO
 
 ## Run
+```
+cd .
+python -m wstp.program_control --help
 python -m wstp.program_control
-
+```
 
 ## TODO
 - GUI
