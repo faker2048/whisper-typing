@@ -8,3 +8,7 @@ TODO
 
 ## Run
 python -m wstp.program_control
+
+
+## TODO
+- GUI
