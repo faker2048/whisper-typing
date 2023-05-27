@@ -1,6 +1,7 @@
 # WhisperTyping
 
-WhisperTyping is a voice input method based on OpenAI's Whisper technology. Press "I" to start speaking and release to get an English translation.
+WhisperTyping is a voice input method based on OpenAI's Whisper technology. Press "Caps Lock" to start speaking and release it to obtain an English translation.
+The result text will be automatically copied to your clipboard.
 
 ## Setup
 TODO
