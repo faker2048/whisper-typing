@@ -4,7 +4,9 @@ WhisperTyping is a voice input method based on OpenAI's Whisper technology. Pres
 The result text will be automatically copied to your clipboard.
 
 ## Setup
-TODO
+```
+pip install -r requirements.txt
+```
 
 ## Run
 ```
