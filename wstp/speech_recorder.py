@@ -59,3 +59,7 @@ class SpeechRecorder:
             )
         else:
             raise NotImplementedError("Unsupported format for get_audio_data.")
+
+    def get_audio_duration(self) -> float:
+        total_samples = sum([frame.shape[0] for frame in self.frames])
+        return total_samples / self.rate
