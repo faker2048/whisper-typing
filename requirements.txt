@@ -1,0 +1,6 @@
+keyboard==0.13.5
+loguru==0.7.0
+numpy==1.23.5
+openai_whisper==20230314
+pyperclip==1.8.2
+sounddevice==0.4.6
