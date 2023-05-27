@@ -24,6 +24,11 @@ def start_speech_recording(
         logger.debug("Saving audio...")
         recorder.save_audio("target/audio.wav")
 
+    duration = recorder.get_audio_duration()
+    if duration < 0.5:
+        logger.debug("Audio too short, ignoring...")
+        return
+
     audio = recorder.get_audio_data()
     text = speech2text.speech2text(audio, args.language)
     if text_callback:
