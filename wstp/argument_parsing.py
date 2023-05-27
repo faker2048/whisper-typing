@@ -10,8 +10,8 @@ def parse_command_line_arguments():
         "-k",
         "--keyboard-key",
         type=str,
-        default="i",
-        help="Keyboard key to start/stop recording (default: 'i')",
+        default="caps lock",
+        help="Keyboard key to start/stop recording (default: 'caps lock')",
     )
     parser.add_argument(
         "-l",
