@@ -7,12 +7,12 @@ class SpeechToText:
     def __init__(
         self,
         model_name: str = "large-v2",
-        download_root: str = None,
+        model_dir: str = None,
         in_memory: bool = False,
     ):
         logger.info("Load model...")
         self.model = whisper.load_model(
-            name=model_name, download_root=download_root, in_memory=in_memory
+            name=model_name, download_root=model_dir, in_memory=in_memory
         )
         logger.info("Model loaded.")
 
