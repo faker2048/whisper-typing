@@ -41,5 +41,12 @@ def parse_command_line_arguments():
         default="large-v2",
         help="Model name (default: 'large-v2')",
     )
+    parser.add_argument(
+        "-d",
+        "--model-dir",
+        type=str,
+        default=None,
+        help="Model dir (default: '~/.cache/whisper')",
+    )
 
     return parser.parse_args()
