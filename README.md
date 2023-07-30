@@ -15,5 +15,19 @@ python -m wstp.main --help
 python -m wstp.main
 ```
 
-## TODO
-- GUI
+## GPU Acceleration
+
+For easy CUDA and cuDNN installation:
+- Linux:
+```bash
+conda install cudnn
+```
+
+- Windows:
+
+_Although using additional torch libraries may not be ideal, it's a straightforward approach for Windows (compared to Nvidia's official CUDA installation). Any alternative methods or suggestions are welcome!_
+```bash
+pip3 install torch --index-url https://download.pytorch.org/whl/cu118
+```
+
+After these settings, YTWS should work with a GPU.
