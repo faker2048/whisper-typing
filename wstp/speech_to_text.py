@@ -1,6 +1,7 @@
-import whisper
-from numpy import ndarray
 from loguru import logger
+from numpy import ndarray
+
+from .model import initialize_whisper_model
 
 
 class SpeechToText:
@@ -8,31 +9,19 @@ class SpeechToText:
         self,
         model_name: str = "large-v2",
         model_dir: str = None,
-        in_memory: bool = False,
+        translate: bool = False,
     ):
-        logger.info("Load model...")
-        self.model = whisper.load_model(
-            name=model_name, download_root=model_dir, in_memory=in_memory
-        )
-        logger.info("Model loaded.")
-
-    def load_audio(self, audio_file: str):
-        audio = whisper.load_audio(audio_file)
-        return audio
-
-    def speechfile2text(self, audio_file: str) -> str:
-        logger.info(" Load audio...")
-        audio = self.load_audio(audio_file)
-        return self.speech2text(audio)
+        self.model = initialize_whisper_model(model_name, model_root=model_dir)
+        logger.info(f"🛫 Model Loaded: {model_name}")
+        self.translate = translate
 
     def speech2text(self, audio: ndarray, language: str) -> str:
-        audio = whisper.pad_or_trim(audio)
+        segs, _ = self.model.transcribe(
+            audio,
+            language=language,
+            task="translate" if self.translate else "transcribe",
+        )
 
-        # make log-Mel spectrogram and move to the same device as the model
-        mel = whisper.log_mel_spectrogram(audio).to(self.model.device)
+        text = " ".join(seg.text.strip() for seg in segs)
 
-        # decode the audio
-        logger.info("Decoding... use language: {}.".format(language))
-        options = whisper.DecodingOptions(task="translate", language=language)
-        result = whisper.decode(self.model, mel, options)
-        return result.text
+        return text.strip()

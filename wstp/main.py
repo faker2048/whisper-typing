@@ -22,7 +22,7 @@ def start_program():
     speech2text = SpeechToText(
         model_name=args.model_name,
         model_dir=args.model_dir,
-        in_memory=True,
+        translate=args.translate,
     )
 
     while True:

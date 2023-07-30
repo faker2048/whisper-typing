@@ -47,7 +47,7 @@ def parse_command_line_arguments():
         "--model-dir",
         type=str,
         default=None,
-        help="Model dir (default: '~/.cache/whisper')",
+        help="Model dir (default: '~/.cache/huggingface')",
     )
 
     return parser.parse_args()
