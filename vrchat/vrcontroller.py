@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from functools import cache
 import sys
 import time
 from typing import Dict
@@ -17,9 +18,13 @@ class VRController:
         self.buttons: Dict[str, vr.EVRButtonId] = {
             "a": vr.k_EButton_IndexController_A,
             "b": vr.k_EButton_IndexController_B,
-            "joystick": vr.k_EButton_IndexController_JoyStick,
+            "joystick": vr.k_EButton_SteamVR_Touchpad,
         }
         self.system: vr.IVRSystem = self.init_system()
+
+    @cache
+    def _controller_idx(self, hand: str) -> int:
+        return self.system.getTrackedDeviceIndexForControllerRole(self.hands[hand])
 
     def init_system(self) -> vr.IVRSystem:
         loop_cnt = 0
@@ -36,9 +41,7 @@ class VRController:
                 time.sleep(1)
 
     def is_pressed(self, hand: str = "right", button: str = "b") -> bool:
-        controller_idx = self.system.getTrackedDeviceIndexForControllerRole(
-            self.hands[hand]
-        )
+        controller_idx = self._controller_idx(hand)
         got_state, state = self.system.getControllerState(controller_idx)
         if not got_state:
             return False

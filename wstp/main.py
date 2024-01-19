@@ -25,7 +25,7 @@ def start_program():
     vr_controller = VRController()
 
     def continue_recording():
-        return vr_controller.is_pressed(hand="right", button="a")
+        return vr_controller.is_pressed(hand="left", button="joystick")
 
     while True:
         if continue_recording():
