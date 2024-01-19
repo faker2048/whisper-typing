@@ -11,11 +11,17 @@ def start_speech_recording(
     args: argparse.Namespace,
     recorder: SpeechRecorder,
     speech2text: SpeechToText,
+    continue_recording: Callable[[], bool],
     text_callback: Callable = None,
 ):
+    """
+    Start recording audio from SpeechRecorder and convert it to text using
+    speech2text. Stop recording when continue_recording returns False.
+    If the text is not empty, call text_callback with the text as argument.
+    """
     logger.debug("Recording started...")
     recorder.start_recording()
-    while keyboard.is_pressed(args.keyboard_key):
+    while continue_recording():
         time.sleep(0.1)
     logger.debug("Recording stopped...")
     recorder.stop_recording()
