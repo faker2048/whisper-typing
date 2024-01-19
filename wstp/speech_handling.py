@@ -22,7 +22,7 @@ def start_speech_recording(
     logger.debug("Recording started...")
     recorder.start_recording()
     while continue_recording():
-        time.sleep(0.1)
+        time.sleep(0.01)
     logger.debug("Recording stopped...")
     recorder.stop_recording()
 
