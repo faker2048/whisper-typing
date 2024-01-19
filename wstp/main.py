@@ -6,12 +6,11 @@ from wstp.speech_handling import start_speech_recording
 from wstp.speech_recorder import SpeechRecorder
 from wstp.speech_to_text import SpeechToText
 import pyperclip
-
+from vrchat.vrchat_client import VRChatClient
 
 def to_clipboard(text: str):
     pyperclip.copy(text)
     logger.debug("Text copied to clipboard")
-
 
 def start_program():
     args = parse_command_line_arguments()
@@ -24,12 +23,13 @@ def start_program():
         model_dir=args.model_dir,
         translate=args.translate,
     )
+    vrchat_client = VRChatClient()
 
     while True:
         keyboard.wait(args.keyboard_key)
         if keyboard.is_pressed(args.keyboard_key):
             start_speech_recording(
-                args, recorder, speech2text, text_callback=to_clipboard
+                args, recorder, speech2text, text_callback=vrchat_client.input_to_chatbox
             )
         time.sleep(0.1)
 

@@ -38,7 +38,7 @@ def parse_command_line_arguments():
         "-m",
         "--model-name",
         type=str,
-        default="large-v2",
+        default="large-v3",
         help="Model name (default: 'large-v2') (tiny, tiny.en, base, base.en, small,\
               small.en, medium, medium.en, large-v1, or large-v2)",
     )
