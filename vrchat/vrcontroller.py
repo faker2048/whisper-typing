@@ -3,6 +3,7 @@ import openvr as vr
 import sys
 import time
 from loguru import logger
+from typing import Generator, List
 
 # Event types
 EVENT_NONE = 0
@@ -11,8 +12,9 @@ EVENT_FALLING_EDGE = 2
 
 
 class InputEvent:
-    def __init__(self, opcode: int):
+    def __init__(self, opcode: int, button: str):
         self.opcode = opcode
+        self.button = button
 
 
 class VRController:
@@ -28,10 +30,10 @@ class VRController:
             "joystick": vr.k_EButton_IndexController_JoyStick,
         }
         self.system = self.init_system()
-        self.last_packet = 0
-        self.event_high = False
+        self.last_packet = {button: 0 for button in self.buttons}
+        self.event_high = {button: False for button in self.buttons}
 
-    def init_system(self):
+    def init_system(self) -> vr.IVRSystem:
         loop_cnt = 0
         while True:
             try:
@@ -45,33 +47,33 @@ class VRController:
                 loop_cnt += 1
                 time.sleep(1)
 
-    def poll_button_press(self, hand="right", button="b") -> int:
+    def poll_button_press(self, hand: str = "right", buttons: List[str] = ["b"]) -> Generator[InputEvent, None, None]:
         while True:
             time.sleep(0.01)
             controller_idx = self.system.getTrackedDeviceIndexForControllerRole(
                 self.hands[hand]
             )
             got_state, state = self.system.getControllerState(controller_idx)
-            if not got_state or state.unPacketNum == self.last_packet:
+            if not got_state:
                 continue
 
-            dead_zone_radius = 0.7
-            button_mask = 1 << self.buttons[button]
-            if (state.ulButtonPressed & button_mask) and (
-                state.rAxis[0].x ** 2 + state.rAxis[0].y ** 2 < dead_zone_radius**2
-            ):
-                if not self.event_high:
-                    yield InputEvent(EVENT_RISING_EDGE)
-                    self.event_high = True
-            elif self.event_high:
-                self.event_high = False
-                yield InputEvent(EVENT_FALLING_EDGE)
+            for button in buttons:
+                button_mask = 1 << self.buttons[button]
+                if (state.ulButtonPressed & button_mask) and (state.unPacketNum != self.last_packet[button]):
+                    if not self.event_high[button]:
+                        yield InputEvent(EVENT_RISING_EDGE, button)
+                        self.event_high[button] = True
+                elif self.event_high[button]:
+                    self.event_high[button] = False
+                    yield InputEvent(EVENT_FALLING_EDGE, button)
+
+                self.last_packet[button] = state.unPacketNum
 
 
 if __name__ == "__main__":
     vr_controller = VRController()
-    for event in vr_controller.poll_button_press(hand="right", button="b"):
+    for event in vr_controller.poll_button_press(hand="right", buttons=["a", "b"]):
         if event.opcode == EVENT_RISING_EDGE:
-            logger.info("Rising edge")
+            logger.info(f"Rising edge on {event.button}")
         elif event.opcode == EVENT_FALLING_EDGE:
-            logger.info("Falling edge")
+            logger.info(f"Falling edge on {event.button}")
